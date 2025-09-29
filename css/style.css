@@ -280,3 +280,132 @@ canvas {
   transform: scale(0.98);
   border: 2px dashed #3d5a80;
 }
+
+
+/* CSS for Attendance Leave Page */
+/* --- Common Tab Styles (Re-used from your existing grid-2 sections) --- */
+.tab-container {
+    padding: 20px;
+}
+
+.leave-tabs {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 20px;
+}
+
+.leave-tabs .tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #555;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent; /* For the active indicator */
+    font-weight: 500;
+}
+
+.leave-tabs .tab-btn.active {
+    color: #007bff; /* Primary color */
+    border-bottom: 3px solid #007bff;
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+    padding-top: 10px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* --- Table Styles (For Leave Records/History) --- */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+    background-color: #f8f8f8;
+    color: #333;
+    font-weight: 600;
+}
+
+/* --- Request Leave Form Styles --- */
+.leave-form {
+    display: grid;
+    grid-template-columns: 150px 1fr; /* Label column and Input column */
+    gap: 15px;
+    max-width: 600px; /* Keep the form neat */
+    padding: 10px;
+}
+
+.leave-form label {
+    font-weight: 500;
+    align-self: center; /* Vertically align label */
+}
+
+.leave-form input[type="date"],
+.leave-form select,
+.leave-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in element's total width/height */
+}
+
+.leave-form textarea {
+    resize: vertical;
+}
+
+/* Make the submit button span both columns */
+.leave-form .btn-submit {
+    grid-column: 1 / 3;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.leave-form .btn-submit:hover {
+    background-color: #0056b3;
+}
+
+/* --- Action Buttons (For Leave Requests) --- */
+.btn-approve {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.btn-reject {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Optional: To make the main content span the whole width on the new page */
+.main-content.full-width {
+    width: 100%;
+}
