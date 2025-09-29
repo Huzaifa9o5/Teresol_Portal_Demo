@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Reports & Analytics</title>
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="../css/style.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      /* Custom styles to match the TERE-HRM theme */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f7f9;
+      }
+    
+    </style>
+  </head>
+  <body>
+        <nav class="topnav">
+      <div class="logo">TERE-HRM</div>
+      <ul class="nav-links">
+        <li>
+          <a href="../index.html"
+            ><img src="../assets/icons/dashboard.png" alt="" />Dashboard</a
+          >
+        </li>
+        <li>
+          <a href="#"
+            ><img
+              src="../assets/icons/organization.png"
+              alt=""
+            />Organization</a
+          >
+        </li>
+        <li>
+          <a href="../pages/employee.html" class="active"
+            ><img src="../assets/icons/employee.png" alt="" />Employee</a
+          >
+        </li>
+        <li>
+          <a href="../attendance-leave.html"
+            ><img
+              src="../assets/icons/attendance-leave.png"
+              alt=""
+            />Attendance/Leave</a
+          >
+        </li>
+        <li>
+          <a href="#"
+            ><img src="../assets/icons/reports.png" alt="" />Reports</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <div id="nav-container"></div>
+
+    <div class="p-8 max-w-7xl mx-auto">
+      <h2 class="text-3xl font-semibold text-[#007bff] border-b-2 border-gray-300 pb-2 mb-6">Employee Attendance Reports</h2>
+
+      <!-- Report Generation Form -->
+      <section class="bg-white p-6 rounded-xl shadow-lg mb-8">
+        <h3 class="text-xl font-medium text-gray-700 mb-4 border-b pb-2">Report Filters</h3>
+        <form id="reportForm" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+          <!-- 1. Report Scope (Team/Individual) -->
+          <div>
+            <label for="reportScope" class="block text-sm font-medium text-gray-700 mb-1">Report Scope</label>
+            <select id="reportScope" name="reportScope" onchange="updateEmployeeList()" required
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+              <option value="team">By Team</option>
+              <option value="individual">By Individual</option>
+            </select>
+          </div>
+
+          <!-- 2. Team/Employee Selector -->
+          <div id="selectorContainer">
+            <label for="teamSelector" class="block text-sm font-medium text-gray-700 mb-1">Select Team</label>
+            <select id="teamSelector" name="teamSelector" required
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+              <!-- Options populated by JS -->
+            </select>
+          </div>
+
+          <!-- 3. Time Frame -->
+          <div>
+            <label for="timeFrame" class="block text-sm font-medium text-gray-700 mb-1">Time Frame</label>
+            <select id="timeFrame" name="timeFrame" onchange="updateDateInputs()" required
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+
+          <!-- 4. Date Picker -->
+          <div id="dateInputContainer">
+            <label for="monthInput" class="block text-sm font-medium text-gray-700 mb-1">Select Month</label>
+            <input type="month" id="monthInput" name="monthInput" required value="2025-09"
+                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+          </div>
+
+        </form>
+
+        <div class="mt-6 flex justify-end space-x-4">
+          <button onclick="generateReport()" class="px-6 py-2 bg-[#28a745] text-white font-semibold rounded-lg shadow-md hover:bg-[#218838] transition-colors">
+            <i class="fas fa-chart-bar mr-2"></i>Generate Report
+          </button>
+          <button onclick="downloadCSV()" id="downloadBtn" disabled
+                  class="px-6 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md cursor-not-allowed transition-colors disabled:opacity-50">
+            <i class="fas fa-download mr-2"></i>Download CSV
+          </button>
+        </div>
+        <div id="errorMsg" class="text-red-600 font-medium mt-4 hidden"></div>
+      </section>
+
+      <!-- Report Results Table -->
+      <section class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-medium text-gray-700 mb-4 border-b pb-2">Generated Report Details</h3>
+        <div class="overflow-x-auto">
+          <table id="reportTable" class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hours Worked</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Time (h)</th>
+              </tr>
+            </thead>
+            <tbody id="reportBody" class="bg-white divide-y divide-gray-200">
+              <tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Select filters and click 'Generate Report'.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- JavaScript Logic (Data, Filtering, Rendering, CSV) -->
+    <script>
+
+      // --- Mock Data ---
+      const MOCK_EMPLOYEES = [
+        { id: 'E101', name: 'Umer', team: 'SW', hoursTarget: 8.0 },
+        { id: 'E102', name: 'ALi', team: 'SW', hoursTarget: 8.0 },
+        { id: 'E201', name: 'Osama', team: 'DevOps', hoursTarget: 8.5 },
+        { id: 'E202', name: 'Hassan', team: 'DevOps', hoursTarget: 8.5 },
+        { id: 'E301', name: 'Asif', team: 'HW', hoursTarget: 7.5 },
+        { id: 'E302', name: 'Bilal', team: 'HW', hoursTarget: 7.5 },
+      ];
+
+      const MOCK_TEAMS = ['SW', 'DevOps', 'HW'];
+
+      // Generate realistic-looking mock attendance data for September 2025
+      const generateMockAttendance = () => {
+        const attendance = [];
+        const start = new Date('2025-09-01');
+        const end = new Date('2025-09-30');
+
+        MOCK_EMPLOYEES.forEach(employee => {
+          let date = new Date(start);
+          while (date <= end) {
+            const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+            const dateString = date.toISOString().slice(0, 10);
+            
+            let record = { employeeId: employee.id, date: dateString, checkIn: null, checkOut: null, status: 'RD' };
+            
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+              // Weekends are Rest Days
+              record.status = 'RD';
+            } else if (date.getDate() === 4 && employee.id === 'E101') {
+                // Specific Absent Day for E101
+                record.status = 'A';
+            } else if (date.getDate() === 7 && employee.id === 'E101') {
+                // Specific Leave Day for E101
+                record.status = 'L';
+            } else {
+              // Workday simulation
+              const randomFactor = Math.random();
+              if (randomFactor < 0.05) {
+                record.status = 'A'; // Absent 5% chance
+              } else if (randomFactor < 0.10) {
+                record.status = 'L'; // Leave 5% chance
+              } else {
+                record.status = 'P'; // Present
+                
+                // Simulate check-in/out times around 9-5
+                let checkInHour = 9 + Math.floor(Math.random() * 2) - 1; // 8, 9, 10
+                let checkInMinute = Math.floor(Math.random() * 60);
+                
+                let workDurationHours = employee.hoursTarget + (Math.random() * 1.5 - 0.75); // +/- 45 mins
+                
+                let checkOutTotalMinutes = (checkInHour * 60 + checkInMinute) + (workDurationHours * 60);
+                let checkOutHour = Math.floor(checkOutTotalMinutes / 60);
+                let checkOutMinute = Math.round(checkOutTotalMinutes % 60);
+
+                record.checkIn = `${String(checkInHour).padStart(2, '0')}:${String(checkInMinute).padStart(2, '0')}`;
+                record.checkOut = `${String(checkOutHour).padStart(2, '0')}:${String(checkOutMinute).padStart(2, '0')}`;
+              }
+            }
+            attendance.push(record);
+            date.setDate(date.getDate() + 1);
+          }
+        });
+        return attendance;
+      };
+      
+      const MOCK_ATTENDANCE = generateMockAttendance();
+
+      // --- Helper Functions ---
+
+      /** Converts HH:mm string to minutes from midnight. */
+      const timeToMinutes = (time) => {
+        if (!time) return 0;
+        const [h, m] = time.split(':').map(Number);
+        return h * 60 + m;
+      };
+
+      /** Calculates duration in hours. */
+      const calculateDuration = (checkIn, checkOut) => {
+        const durationMins = Math.max(0, timeToMinutes(checkOut) - timeToMinutes(checkIn));
+        return durationMins / 60; // Returns hours
+      };
+
+      /** Gets date range (YYYY-MM-DD) for selected period type. */
+      const getDateRange = (timeFrame, dateInput) => {
+        let start, end;
+        try {
+          if (timeFrame === 'monthly') {
+            [start, end] = getMonthRange(dateInput);
+          } else if (timeFrame === 'weekly') {
+            [start, end] = getWeekRange(dateInput);
+          } else if (timeFrame === 'custom') {
+            const startInput = document.getElementById('startDateInput').value;
+            const endInput = document.getElementById('endDateInput').value;
+            if (!startInput || !endInput) throw new Error('Custom dates are required.');
+            start = new Date(startInput);
+            end = new Date(endInput);
+          }
+          return { start: start.toISOString().slice(0, 10), end: end.toISOString().slice(0, 10) };
+        } catch (e) {
+          document.getElementById('errorMsg').textContent = e.message;
+          document.getElementById('errorMsg').classList.remove('hidden');
+          return null;
+        }
+      };
+      
+      const getMonthRange = (month) => {
+          const [year, mon] = month.split('-').map(Number);
+          const start = new Date(year, mon - 1, 1);
+          const end = new Date(year, mon, 0); // Last day of the month
+          return [start, end];
+      };
+
+      const getWeekRange = (dateString) => {
+          const date = new Date(dateString);
+          // Go to the previous Sunday (start of the week)
+          const start = new Date(date.setDate(date.getDate() - date.getDay()));
+          // Go to the following Saturday (end of the week)
+          const end = new Date(start);
+          end.setDate(end.getDate() + 6);
+          return [start, end];
+      };
+
+      // --- UI Functions ---
+
+      const updateEmployeeList = () => {
+        const scope = document.getElementById('reportScope').value;
+        const container = document.getElementById('selectorContainer');
+        
+        container.innerHTML = '';
+        
+        if (scope === 'team') {
+          container.innerHTML = `
+            <label for="teamSelector" class="block text-sm font-medium text-gray-700 mb-1">Select Team</label>
+            <select id="teamSelector" name="teamSelector" required
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+              ${MOCK_TEAMS.map(team => `<option value="${team}">${team} (${MOCK_EMPLOYEES.filter(e => e.team === team).length})</option>`).join('')}
+            </select>`;
+        } else {
+          container.innerHTML = `
+            <label for="employeeSelector" class="block text-sm font-medium text-gray-700 mb-1">Select Employee</label>
+            <select id="employeeSelector" name="employeeSelector" required
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+              ${MOCK_EMPLOYEES.map(e => `<option value="${e.id}">${e.name} (${e.team})</option>`).join('')}
+            </select>`;
+        }
+      };
+
+      const updateDateInputs = () => {
+        const timeFrame = document.getElementById('timeFrame').value;
+        const container = document.getElementById('dateInputContainer');
+        
+        container.innerHTML = '';
+        
+        if (timeFrame === 'monthly') {
+          container.innerHTML = `
+            <label for="monthInput" class="block text-sm font-medium text-gray-700 mb-1">Select Month</label>
+            <input type="month" id="monthInput" name="dateInput" required value="2025-09"
+                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">`;
+        } else if (timeFrame === 'weekly') {
+          container.innerHTML = `
+            <label for="weekInput" class="block text-sm font-medium text-gray-700 mb-1">Select Week Start Date</label>
+            <input type="date" id="weekInput" name="dateInput" required value="2025-09-01"
+                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">`;
+        } else { // custom
+          container.innerHTML = `
+            <label for="startDateInput" class="block text-sm font-medium text-gray-700 mb-1">Custom Date Range</label>
+            <input type="date" id="startDateInput" name="startDateInput" required 
+                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm mb-2">
+            <input type="date" id="endDateInput" name="endDateInput" required 
+                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">`;
+        }
+      };
+
+      // --- Report Generation Logic ---
+
+      const generateReport = () => {
+        document.getElementById('errorMsg').classList.add('hidden');
+        document.getElementById('downloadBtn').disabled = true;
+        const form = document.getElementById('reportForm');
+        const scope = form.reportScope.value;
+        const timeFrame = form.timeFrame.value;
+        const dateInput = timeFrame === 'custom' ? null : form.querySelector('[name="dateInput"]')?.value;
+        
+        // 1. Determine Date Range
+        const range = getDateRange(timeFrame, dateInput);
+        if (!range) return;
+        
+        // 2. Filter Attendance Data
+        let filteredData = MOCK_ATTENDANCE.filter(record => 
+          record.date >= range.start && record.date <= range.end
+        );
+
+        // 3. Filter by Scope (Team/Individual)
+        let targetEmployees = [];
+        if (scope === 'team') {
+          const teamName = form.teamSelector.value;
+          targetEmployees = MOCK_EMPLOYEES.filter(e => e.team === teamName);
+        } else {
+          const employeeId = form.employeeSelector.value;
+          targetEmployees = MOCK_EMPLOYEES.filter(e => e.id === employeeId);
+        }
+
+        const targetIds = targetEmployees.map(e => e.id);
+        filteredData = filteredData.filter(r => targetIds.includes(r.employeeId));
+
+        // 4. Calculate Metrics (Avg. Time)
+        const employeeMetrics = {};
+        
+        targetEmployees.forEach(employee => {
+            const employeeRecords = filteredData.filter(r => r.employeeId === employee.id && r.status === 'P');
+            let totalHours = 0;
+            employeeRecords.forEach(r => {
+                totalHours += calculateDuration(r.checkIn, r.checkOut);
+            });
+            const avgHours = employeeRecords.length > 0 ? totalHours / employeeRecords.length : 0;
+            // Also store the hours target for status coloring in the table
+            employeeMetrics[employee.id] = { 
+                avgHours: avgHours.toFixed(2), 
+                totalHours: totalHours.toFixed(2),
+                hoursTarget: employee.hoursTarget
+            };
+        });
+
+
+        // 5. Render Table
+        renderReportTable(filteredData, targetEmployees, employeeMetrics);
+        
+        document.getElementById('downloadBtn').disabled = false;
+      };
+
+      const renderReportTable = (data, employees, metrics) => {
+        const tbody = document.getElementById('reportBody');
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No attendance records found for the selected criteria.</td></tr>`;
+          return;
+        }
+        
+        // Data is grouped by employee for easy rendering
+        const groupedData = data.reduce((acc, record) => {
+          const emp = employees.find(e => e.id === record.employeeId);
+          if (!acc[emp.id]) {
+            acc[emp.id] = { name: emp.name, id: emp.id, records: [] };
+          }
+          acc[emp.id].records.push(record);
+          return acc;
+        }, {});
+        
+        Object.values(groupedData).forEach(group => {
+          const numRecords = group.records.length;
+          const employeeId = group.id;
+          const employeeTarget = metrics[employeeId]?.hoursTarget || 8.0;
+          const avgHours = metrics[employeeId]?.avgHours || '0.00';
+          
+          group.records.forEach((record, index) => {
+            const hoursWorked = record.status === 'P' ? calculateDuration(record.checkIn, record.checkOut).toFixed(2) : '0.00';
+            let statusText;
+            let statusClass = 'text-gray-900';
+            
+            if (record.status === 'A') {
+                statusText = 'Absent';
+                statusClass = 'text-red-500 font-medium';
+            } else if (record.status === 'L') {
+                statusText = 'Leave';
+                statusClass = 'text-blue-500 font-medium';
+            } else if (record.status === 'RD') {
+                statusText = 'Rest Day';
+                statusClass = 'text-purple-500';
+            } else { // Present (P)
+                statusText = parseFloat(hoursWorked) >= employeeTarget ? 'Present' : 'Present(Short)';
+                statusClass = parseFloat(hoursWorked) >= employeeTarget ? 'text-green-600 font-medium' : 'text-yellow-600 font-medium';
+            }
+
+
+            const row = document.createElement('tr');
+            row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+            row.innerHTML = `
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${group.name}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${record.date}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${record.checkIn || 'N/A'}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${record.checkOut || 'N/A'}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm ${statusClass}">${hoursWorked}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm ${statusClass}">${statusText}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm ${index === 0 ? `font-semibold text-gray-700` : `text-gray-400 opacity-0`}" rowspan="${index === 0 ? numRecords : 1}">
+                ${index === 0 ? avgHours : ''}
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        });
+        
+        // Add Summary Row (only for Team reports)
+        if (employees.length > 1) {
+            const overallTotalHours = Object.values(metrics).reduce((sum, m) => sum + parseFloat(m.totalHours), 0);
+            const totalPresentDays = data.filter(r => r.status === 'P').length;
+            const overallAvg = totalPresentDays > 0 ? (overallTotalHours / totalPresentDays).toFixed(2) : '0.00';
+
+            const summaryRow = document.createElement('tr');
+            summaryRow.className = 'bg-blue-100 border-t-4 border-blue-300';
+            summaryRow.innerHTML = `
+                <td colspan="6" class="px-6 py-4 text-right text-base font-bold text-blue-800">TEAM AVERAGE TIME:</td>
+                <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-blue-800">${overallAvg}</td>
+            `;
+            tbody.appendChild(summaryRow);
+        }
+
+      };
+
+      // --- CSV Export Logic ---
+
+      const downloadCSV = () => {
+        const table = document.getElementById('reportTable');
+        const rows = table.querySelectorAll('tr');
+        let csvContent = [];
+
+        // Header Row
+        const headerCells = table.querySelectorAll('thead th');
+        let header = [];
+        headerCells.forEach(cell => header.push(cell.textContent.trim()));
+        // Remove the Avg. Time column from the CSV header for detail rows
+        header.pop(); 
+        header.push("Average Time (h)");
+        csvContent.push(header.join(','));
+
+        // Data Rows
+        const bodyRows = table.querySelectorAll('#reportBody tr');
+        let currentAvg = '';
+        
+        bodyRows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length > 1) { // Skip team average row
+              let rowData = [];
+              cells.forEach((cell, index) => {
+                  let text = cell.textContent.trim().replace(/\n/g, '').replace(/,/, ';'); // Remove newlines and internal commas
+
+                  // Capture the Average Time when it's first shown in the rowspan column
+                  if (index === 6 && text) {
+                      currentAvg = text;
+                  }
+                  
+                  if (index < 6) { // Include standard columns
+                      rowData.push(`"${text}"`);
+                  }
+              });
+              
+              // Only add Average Time if it was visible in the current row's context
+              if (currentAvg) {
+                  rowData.push(currentAvg);
+                  currentAvg = ''; // Clear after adding to the first row of a group
+              } else {
+                  rowData.push(''); // Blank for subsequent rows
+              }
+
+              if(rowData.length > 1) {
+                  csvContent.push(rowData.join(','));
+              }
+          }
+        });
+
+        // Create Blob and trigger download
+        const blob = new Blob([csvContent.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", "attendance_report.csv");
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      };
+
+
+      // --- Initialization ---
+      document.addEventListener('DOMContentLoaded', () => {
+        // Render navigation bar on page load
+        const currentFilename = 'reports.html';
+       
+        updateEmployeeList();
+        updateDateInputs();
+      });
+    </script>
+  </body>
+</html>

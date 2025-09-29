@@ -178,7 +178,7 @@
 
   <body>
     <nav class="topnav">
-      <div class="logo">TERE-HCM</div>
+      <div class="logo">TERE-HRM</div>
       <ul class="nav-links">
         <li>
           <a href="/"
@@ -331,6 +331,45 @@
             </div>
 
             <div class="tab-content" id="leave-requests">
+              <h3>My Leave Requests</h3>
+              <table id="example2_leaves_requested" class="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Requester</th>
+                    <th>Leave Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <!-- <th>Action</th> -->
+                  </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                  <tr>
+                    <td>1</td>
+                    <td>Saleem Tariq</td>
+                    <td>Annual</td>
+                    <td>2025-10-10</td>
+                    <td>2025-10-14</td>
+                    <td>5.000</td>
+                    <td style="color: #d83b13;">
+                        Pending
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Amna Khan</td>
+                    <td>Sick</td>
+                    <td>2025-09-30</td>
+                    <td>2025-09-30</td>
+                    <td>1.000</td>
+                    <td style="color: #218838;">
+                        Aprroved
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
               <h3>Pending Leave Requests (To be Approved/Rejected)</h3>
               <table id="example2_leaves_requested" class="data-table">
                 <thead>

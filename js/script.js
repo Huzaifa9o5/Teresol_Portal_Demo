@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== Chart =====
   const ctx = document.getElementById("attendanceChart").getContext("2d");
   /**
- * TERE-HCM Dashboard Client-Side Logic
+ * TERE-HRM Dashboard Client-Side Logic
  * Includes dynamic tab switching, the Monthly Attendance Performance Chart, and Drag & Drop functionality.
  */
 
