@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TERE-HCM Dashboard</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- ===== Top Navigation ===== -->
+    <nav class="topnav">
+      <div class="logo">TERE-HCM</div>
+      <ul class="nav-links">
+        <li>
+          <a href="#"
+            ><img src="assets/icons/dashboard.png" alt="" />Dashboard</a
+          >
+        </li>
+        <li>
+          <a href="#"
+            ><img src="assets/icons/organization.png" alt="" />Organization</a
+          >
+        </li>
+        <li>
+          <a href="#"><img src="assets/icons/hr.png" alt="" />Recruitment</a>
+        </li>
+        <li>
+          <a href="#"><img src="assets/icons/employee.png" alt="" />Employee</a>
+        </li>
+        <li>
+          <a href="#"
+            ><img
+              src="assets/icons/attendance-leave.png"
+              alt=""
+            />Attendance/Leave</a
+          >
+        </li>
+        <li>
+          <a href="#"><img src="assets/icons/payroll.png" alt="" />Payroll</a>
+        </li>
+        <li>
+          <a href="#"><img src="assets/icons/reports.png" alt="" />Reports</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- ===== Main Dashboard Layout ===== -->
+    <div class="dashboard">
+      <!-- Left Profile Section -->
+      <aside class="profile-section">
+        <div class="ess-header">ESS Dashboard</div>
+        <div class="profile-card">
+          <div class="avatar"></div>
+          <h3>Anna Caxilijan</h3>
+          <p>Archietecture Engineer</p>
+        </div>
+
+        <!-- <div class="attendance-details">
+          <h4>Attendance Details</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>09Sep25</td>
+                <td>Missing</td>
+                <td>Accept</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>01Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>03Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>04Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>05Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+            </tbody>
+          </table>
+        </div> -->
+        <section class="summary-card">
+            <h3>Attendance Summary</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Present</td>
+                  <td>14</td>
+                </tr>
+                <tr>
+                  <td>Absent</td>
+                  <td>00</td>
+                </tr>
+                <tr>
+                  <td>Half Day</td>
+                  <td>00</td>
+                </tr>
+                <tr>
+                  <td>Off Day</td>
+                  <td>00</td>
+                </tr>
+                <tr>
+                  <td>Missing</td>
+                  <td>15</td>
+                </tr>
+                <tr>
+                  <td>Leave</td>
+                  <td>00</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+      </aside>
+
+      <!-- Right Content -->
+      <main class="main-content">
+        <!-- Attendance Summary Chart -->
+        <section id="attendance-summary" class="summary-card">
+          <h3>Attendance Summary</h3>
+          <canvas id="attendanceChart" width="600" height="300"></canvas>
+        </section>
+
+        <div class="grid-2">
+          <!-- Leave Summary -->
+          <section id="leave-summary" class="summary-card">
+            <h3>Leave Summary</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Casual Leave</td>
+                  <td>08</td>
+                </tr>
+                <tr>
+                  <td>Maternity Leave</td>
+                  <td>90</td>
+                </tr>
+                <tr>
+                  <td>Sick Leave</td>
+                  <td>08</td>
+                </tr>
+                <tr>
+                  <td>Marriage Leave</td>
+                  <td>15</td>
+                </tr>
+                <tr>
+                  <td>Annual Leave</td>
+                  <td>15</td>
+                </tr>
+                <tr>
+                  <td>Hajj Leave</td>
+                  <td>30</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+           <div id="attendance-details" class="attendance-details">
+          <h4>Attendance Details</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>09Sep25</td>
+                <td>Missing</td>
+                <td>Accept</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>01Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>03Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>04Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>05Sep25</td>
+                <td>Absent</td>
+                <td>Reject</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+          <!-- Attendance Summary Totals
+          <section class="summary-card">
+            <h3>Attendance Summary</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Present</td>
+                  <td>14</td>
+                </tr>
+                <tr>
+                  <td>Absent</td>
+                  <td>00</td>
+                </tr>
+                <tr>
+                  <td>Half Day</td>
+                  <td>00</td>
+                </tr>
+                <tr>
+                  <td>Off Day</td>
+                  <td>00</td>
+                </tr>
+                <tr>
+                  <td>Missing</td>
+                  <td>15</td>
+                </tr>
+                <tr>
+                  <td>Leave</td>
+                  <td>00</td>
+                </tr>
+              </tbody>
+            </table>
+          </section> -->
+        </div>
+
+        <!-- ===== Updated Tiles Section ===== -->
+        <div class="grid-2">
+          <!-- News/Policy Combined -->
+          <section id="news-policy" class="tab-card">
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="news-left">News</button>
+              <button class="tab-btn" data-tab="policy-left">Policy</button>
+            </div>
+            <div class="tab-content active" id="news-left">
+              <ul>
+                <li>Saad Afzal Work Anniversary Today</li>
+                <li>Huzaifa Ahmed Birthday Today</li>
+                <li>
+                  Company will stay close on 09th Oct for Iqbal Day’s
+                  Celebration
+                </li>
+              </ul>
+            </div>
+            <div class="tab-content" id="policy-left">
+              <ul>
+                <li>
+                  Wedding Leave Policy
+                  <a href="#"><i class="fa-solid fa-download"></i></a>
+                </li>
+                <li>
+                  Increment / Promotion Policy
+                  <a href="#"><i class="fa-solid fa-download"></i></a>
+                </li>
+                <li>
+                  IPD Reimbursement Policy
+                  <a href="#"><i class="fa-solid fa-download"></i></a>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- My Team / My Manager -->
+          <section id="team-manager" class="tab-card">
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="team">My Team</button>
+            <button class="tab-btn" data-tab="manager">My Manager</button>
+            </div>
+            <div class="tab-content active" id="team">
+              <ul>
+                <li>Saad Afzal</li>
+                <li>Hassan Bin Tahir</li>
+                <li>Sufyan Sikandar</li>
+              </ul>
+            </div>
+            <div class="tab-content" id="manager">
+              <p>Adeel Tariq</p>
+            </div>
+          </section>
+
+          <!-- Employee Salary Slip -->
+          <section id="salary-slip" class="summary-card salary-slip">
+            <h3>Employee Salary Slip</h3>
+            <ul>
+              <li>
+                Sep 2025 <a href="#"><i class="fa-solid fa-download"></i></a>
+              </li>
+              <li>
+                Aug 2025 <a href="#"><i class="fa-solid fa-download"></i></a>
+              </li>
+              <li>
+                July 2025 <a href="#"><i class="fa-solid fa-download"></i></a>
+              </li>
+              <li>
+                June 2025 <a href="#"><i class="fa-solid fa-download"></i></a>
+              </li>
+              <li>
+                May 2025 <a href="#"><i class="fa-solid fa-download"></i></a>
+              </li>
+              <li>
+                April 2025 <a href="#"><i class="fa-solid fa-download"></i></a>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>

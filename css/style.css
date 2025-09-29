@@ -1,0 +1,282 @@
+/* ===== Base Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f0f4f8;
+  color: #333;
+}
+
+/* ===== Top Navigation ===== */
+.topnav {
+  background: #3d5a80;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 10px 40px;
+}
+.topnav .logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-right: 50px;
+}
+.topnav .nav-links {
+  list-style: none;
+  display: flex;
+  flex: 1;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+.topnav .nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s;
+}
+.topnav .nav-links li a:hover {
+  opacity: 0.5;
+}
+.topnav img {
+  width: 24px;
+  height: 24px;
+}
+
+/* ===== Dashboard Layout ===== */
+.dashboard {
+  display: flex;
+  height: calc(100vh - 60px);
+  padding: 20px;
+  gap: 20px;
+}
+
+/* ===== Left Section ===== */
+.profile-section {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+.ess-header {
+  background: #293241;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+.profile-card {
+  background: #e0fbfc;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+.profile-card .avatar {
+  width: 80px;
+  height: 80px;
+  background: url("../assets/images/profile.jpeg") no-repeat center center /
+    cover;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+}
+.profile-card h3 {
+  margin-bottom: 5px;
+}
+.profile-card p {
+  font-size: 0.9rem;
+  color: #555;
+}
+.attendance-details {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(61, 90, 128, 0.1);
+}
+.attendance-details h4 {
+  margin-bottom: 10px;
+  color: #3d5a80;
+  font-weight: 600;
+}
+.attendance-details table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.attendance-details th,
+.attendance-details td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+.attendance-details th {
+  background: #3d5a80;
+  color: #fff;
+}
+
+/* ===== Right Section ===== */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* ===== Universal Card Styles ===== */
+.summary-card,
+.tab-card {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(61, 90, 128, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.summary-card:hover,
+.tab-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(61, 90, 128, 0.2);
+}
+.summary-card h3,
+.tab-card h3 {
+  margin-bottom: 15px;
+  color: #293241;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-left: 4px solid #3d5a80;
+  padding-left: 10px;
+}
+
+/* ===== Tables inside Cards ===== */
+.summary-card table,
+.attendance-details table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.summary-card td,
+.attendance-details td {
+  padding: 10px 8px;
+  border: 1px solid #e2e8f0;
+}
+.summary-card td:first-child {
+  font-weight: 600;
+  color: #3d5a80;
+}
+
+/* ===== Grid Layout ===== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* ===== Chart Canvas ===== */
+#attendanceChart {
+  max-width: 100%;
+  height: 300px !important;
+}
+canvas {
+  width: 100% !important;
+  height: 200px !important;
+}
+
+/* ===== Tab Card Styles ===== */
+.tab-card .tabs {
+  display: flex;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 15px;
+}
+.tab-card .tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: #edf2f7;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 6px 6px 0 0;
+  transition: all 0.2s ease;
+}
+.tab-card .tab-btn.active {
+  background: #3d5a80;
+  color: #fff;
+}
+.tab-card .tab-content {
+  display: none;
+}
+.tab-card .tab-content.active {
+  display: block;
+}
+.tab-card ul {
+  list-style: disc;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+.tab-card li {
+  margin-bottom: 8px;
+}
+.tab-card a {
+  color: #3d5a80;
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin-left: 10px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.tab-card a:hover {
+  color: #d83b13;
+}
+
+/* ===== Salary Slip Styling ===== */
+.salary-slip ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+.salary-slip li {
+  margin: 10px 0;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.salary-slip a {
+  color: #3d5a80;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.salary-slip a:hover {
+  color: #d83b13;
+}
+
+/* ===== Download Icons ===== */
+.salary-slip a i,
+#policy-left a i {
+  margin-left: 6px;
+  color: #3d5a80;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.salary-slip a i:hover,
+#policy-left a i:hover {
+  color: #d83b13;
+}
+
+/* ===== Drag & Drop Styling ===== */
+.dragging {
+  opacity: 0.6;
+  transform: scale(0.98);
+  border: 2px dashed #3d5a80;
+}
