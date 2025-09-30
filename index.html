@@ -3,438 +3,222 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TERE-HRM  Dashboard</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <title>Home - Personal & Employment Data</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
+    <style>
+      /* --- Global & Layout Reset --- */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f7f9;
+        margin: 0;
+        display: flex;
+        min-height: 100vh;
+      }
+      .dashboard-container { flex-grow: 1; padding: 20px; }
+      .main-content { max-width: 1200px; margin: 0 auto; }
+      h2 { color: #007bff; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 20px; }
+      .summary-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+      }
+      .summary-card h3 { 
+        color: #007bff; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; 
+      }
+      .data-table { width: 100%; border-collapse: collapse; }
+      .data-table td { padding: 8px 0; border-bottom: 1px solid #eee; }
+      
+      /* --- NEW PROFILE HEADER STYLES --- */
+      .profile-header-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+      }
+      .profile-info {
+        flex-grow: 1;
+      }
+      .profile-info h1 {
+        font-size: 2.2rem;
+        color: #007bff;
+        margin: 0 0 5px;
+      }
+      .profile-info p {
+        font-size: 1.1rem;
+        color: #555;
+        margin: 0 0 5px;
+      }
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #e0e0e0; /* Placeholder color */
+        background-image: url('https://placehold.co/100x100/CCCCCC/888888?text=AVATAR'); /* Placeholder image */
+        background-size: cover;
+        flex-shrink: 0;
+        border: 4px solid #007bff;
+      }
+      .employee-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      
+      /* --- STICKY LEFT NAVBAR --- */
+      .sidebar-nav {
+        width: 250px;
+        flex-shrink: 0;
+        background-color: #007bff;
+        color: white;
+        padding: 20px 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar-nav .logo {
+        padding: 0 20px 20px;
+        font-size: 1.8rem;
+        font-weight: bold;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 15px;
+      }
+      .sidebar-nav .nav-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .sidebar-nav .nav-links li a {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: inherit;
+        text-decoration: none;
+        transition: background-color 0.2s, color 0.2s;
+      }
+      .sidebar-nav .nav-links li a:hover, .sidebar-nav .nav-links li.active a {
+        background-color: #0056b3;
+        font-weight: bold;
+      }
+      .sidebar-nav i {
+        margin-right: 10px;
+        width: 18px;
+      }
+    </style>
   </head>
 
   <body>
-    <!-- ===== Top Navigation ===== -->
-    <nav class="topnav">
-      <div class="logo">TERE-HRM </div>
+    <nav class="sidebar-nav">
+      <div class="logo">TERE-HRM</div>
       <ul class="nav-links">
-        <li>
-          <a href="#"
-            ><img src="assets/icons/dashboard.png" alt="" />Dashboard</a
-          >
+        <li class="active">
+          <a href="index.html"><i class="fas fa-home"></i>Home</a>
         </li>
         <li>
-          <a href="#"
-            ><img src="assets/icons/organization.png" alt="" />Organization</a
-          >
+          <a href="./pages/attendance_record.html"><i class="fas fa-chart-line"></i>Attendance Record</a>
         </li>
         <li>
-          <a href="../pages/employee.html"
-            ><img src="assets/icons/employee.png" alt="" />Employee</a
-          >
+          <a href="./pages/leave_record.html"><i class="fas fa-calendar-alt"></i>Leave Record</a>
         </li>
         <li>
-          <a href="attendance-leave.html">
-            <img
-              src="assets/icons/attendance-leave.png"
-              alt=""
-            />Attendance/Leave
-          </a>
-        </li>
-        <li>
-          <a href="#"><img src="assets/icons/reports.png" alt="" />Reports</a>
+          <a href="./pages/leave_applications.html"><i class="fas fa-list-check"></i>Leave Applications</a>
         </li>
       </ul>
     </nav>
 
-    <!-- ===== Main Dashboard Layout ===== -->
-    <div class="dashboard">
-      <!-- Left Profile Section -->
-      <aside class="profile-section">
-        <div class="ess-header">ESS Dashboard</div>
-        <div class="profile-card">
-          <div class="avatar"></div>
-          <h3>Anna Caxilijan</h3>
-          <p>Archietecture Engineer</p>
-        </div>
-
-        <section class="summary-card">
-          <h3>Attendance Summary</h3>
-          <table>
-            <tbody>
-              <tr>
-                <td>Present</td>
-                <td>14</td>
-              </tr>
-              <tr>
-                <td>Absent</td>
-                <td>00</td>
-              </tr>
-              <tr>
-                <td>Half Day</td>
-                <td>00</td>
-              </tr>
-              <tr>
-                <td>Off Day</td>
-                <td>00</td>
-              </tr>
-              <tr>
-                <td>Missing</td>
-                <td>15</td>
-              </tr>
-              <tr>
-                <td>Leave</td>
-                <td>00</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-      </aside>
-
-      <!-- Right Content -->
+    <div class="dashboard-container">
       <main class="main-content">
-        <!-- Attendance Summary Chart -->
-        <section id="attendance-summary" class="summary-card">
-          <h3>Monthly Attendance Performance (30 Days)</h3>
-          <p id="avg-time-display">
-            Average daily time: <strong id="avg-time-value">Loading...</strong>
-          </p>
-          <canvas id="attendanceChart" height="300"></canvas>
-          <div
-            id="legend-info"
-            style="margin-top: 15px; font-size: 0.9em; text-align: center"
-          >
-            <span style="color: #2aa54f">■ $\ge 8$ Hours (Green)</span>
-            <span style="color: #ffc107; margin-left: 15px"
-              >■ $0 <$ Hours $< 8$ (Yellow)</span
-            >
-            <span style="color: #d83b13; margin-left: 15px"
-              >■ Absent/0 Hours (Red)</span
-            >
-            <span style="color: #007bff; margin-left: 15px"
-              >■ Leave/Rest Day (Blue)</span
-            >
-          </div>
+        <h2>Employee Summary</h2>
+
+        <section class="profile-header-card">
+            <div class="profile-info">
+                <h1>Anna Caxilijan</h1>
+                <p><strong>Designation:</strong> Architecture Engineer</p>
+                <p><strong>Department:</strong> Design & Engineering</p>
+            </div>
+            <div class="profile-avatar" aria-label="Employee Avatar"></div>
         </section>
 
-        <div class="grid-2">
-          <!-- Leave Summary -->
-          <section id="leave-summary" class="summary-card">
-            <h3>Leave Summary</h3>
-            <table>
+
+        <h2 style="font-size: 1.5rem; border-bottom: none; padding-bottom: 0;">Detailed Information</h2>
+
+        <div class="employee-info-grid">
+          
+          <section class="summary-card">
+            <h3>Personal Details</h3>
+            <table class="data-table">
               <tbody>
                 <tr>
-                  <td>Casual Leave</td>
-                  <td>08</td>
+                  <td><strong>Employee Code</strong></td>
+                  <td>EMP-1024</td>
                 </tr>
                 <tr>
-                  <td>Maternity Leave</td>
-                  <td>90</td>
+                  <td><strong>Date of Birth</strong></td>
+                  <td>15th Aug 1995</td>
                 </tr>
                 <tr>
-                  <td>Sick Leave</td>
-                  <td>08</td>
+                  <td><strong>Gender</strong></td>
+                  <td>Female</td>
                 </tr>
                 <tr>
-                  <td>Marriage Leave</td>
-                  <td>15</td>
+                  <td><strong>Marital Status</strong></td>
+                  <td>Single</td>
                 </tr>
                 <tr>
-                  <td>Annual Leave</td>
-                  <td>15</td>
+                  <td><strong>CNIC</strong></td>
+                  <td>35202-1234567-8</td>
                 </tr>
                 <tr>
-                  <td>Hajj Leave</td>
-                  <td>30</td>
+                  <td><strong>Contact</strong></td>
+                  <td>+92 300 1234567</td>
+                </tr>
+                <tr>
+                  <td><strong>Email</strong></td>
+                  <td>anna.cax@terehrm.com</td>
                 </tr>
               </tbody>
             </table>
           </section>
 
-          <div id="attendance-details" class="attendance-details">
-            <h4>Attendance Details</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Sr</th>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
+          <section class="summary-card">
+            <h3>Employment Details</h3>
+            <table class="data-table">
               <tbody>
                 <tr>
-                  <td>1</td>
-                  <td>09Sep25</td>
-                  <td>Missing</td>
-                  <td>Accept</td>
+                  <td><strong>Joining Date</strong></td>
+                  <td>01-Jan-2022</td>
                 </tr>
                 <tr>
-                  <td>2</td>
-                  <td>01Sep25</td>
-                  <td>Absent</td>
-                  <td>Reject</td>
+                  <td><strong>Employment Type</strong></td>
+                  <td>Full-Time</td>
                 </tr>
                 <tr>
-                  <td>3</td>
-                  <td>03Sep25</td>
-                  <td>Absent</td>
-                  <td>Reject</td>
+                  <td><strong>Manager</strong></td>
+                  <td>Adeel Tariq</td>
                 </tr>
                 <tr>
-                  <td>4</td>
-                  <td>04Sep25</td>
-                  <td>Absent</td>
-                  <td>Reject</td>
+                  <td><strong>Location</strong></td>
+                  <td>Islamabad Office</td>
                 </tr>
                 <tr>
-                  <td>5</td>
-                  <td>05Sep25</td>
-                  <td>Absent</td>
-                  <td>Reject</td>
+                  <td><strong>Status</strong></td>
+                  <td style="color: green; font-weight: bold;">Active</td>
                 </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-
-        <!-- ===== Updated Tiles Section ===== -->
-        <div class="grid-2">
-          <!-- News/Policy Combined -->
-          <section id="news-policy" class="tab-card">
-            <div class="tabs">
-              <button class="tab-btn active" data-tab="news-left">News</button>
-              <button class="tab-btn" data-tab="policy-left">Policy</button>
-            </div>
-            <div class="tab-content active" id="news-left">
-              <ul>
-                <li>Saad Afzal Work Anniversary Today</li>
-                <li>Huzaifa Ahmed Birthday Today</li>
-                <li>
-                  Company will stay close on 09th Oct for Iqbal Day’s
-                  Celebration
-                </li>
-              </ul>
-            </div>
-            <div class="tab-content" id="policy-left">
-              <ul>
-                <li>
-                  Wedding Leave Policy
-                  <a href="#"><i class="fa-solid fa-download"></i></a>
-                </li>
-                <li>
-                  Increment / Promotion Policy
-                  <a href="#"><i class="fa-solid fa-download"></i></a>
-                </li>
-                <li>
-                  IPD Reimbursement Policy
-                  <a href="#"><i class="fa-solid fa-download"></i></a>
-                </li>
-              </ul>
-            </div>
-          </section>
-
-          <!-- My Team / My Manager -->
-          <section id="team-manager" class="tab-card">
-            <div class="tabs">
-              <button class="tab-btn active" data-tab="team">My Team</button>
-              <button class="tab-btn" data-tab="manager">My Manager</button>
-            </div>
-            <div class="tab-content active" id="team">
-              <ul>
-                <li>Saad Afzal</li>
-                <li>Hassan Bin Tahir</li>
-                <li>Sufyan Sikandar</li>
-              </ul>
-            </div>
-            <div class="tab-content" id="manager">
-              <p>Adeel Tariq</p>
-            </div>
           </section>
         </div>
       </main>
     </div>
-
-    <!-- JS -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="js/script.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        initAttendanceChart();
-      });
-
-      const timeToMinutes = (time) => {
-        if (!time) return 0;
-        const [h, m] = time.split(":").map(Number);
-        return h * 60 + m;
-      };
-
-      const mockAttendanceData = [
-        // Days 1-5: Over 8 hours (Green)
-        { type: "Present", checkIn: "09:00", checkOut: "17:30" }, // 8.5h
-        { type: "Present", checkIn: "08:30", checkOut: "17:30" }, // 9.0h
-        { type: "Present", checkIn: "09:00", checkOut: "18:00" }, // 9.0h
-        { type: "Present", checkIn: "09:00", checkOut: "17:45" }, // 8.75h
-        { type: "Present", checkIn: "09:15", checkOut: "17:45" }, // 8.5h
-
-        // Days 6-10: Under 8 hours (Yellow)
-        { type: "Present", checkIn: "09:00", checkOut: "16:30" }, // 7.5h
-        { type: "Present", checkIn: "10:00", checkOut: "17:00" }, // 7.0h
-        { type: "Present", checkIn: "09:00", checkOut: "16:00" }, // 7.0h
-        { type: "Present", checkIn: "08:30", checkOut: "16:00" }, // 7.5h
-        { type: "Present", checkIn: "09:00", checkOut: "16:45" }, // 7.75h
-
-        // Days 11-15: Absent (Red)
-        { type: "Absent", checkIn: null, checkOut: null },
-        { type: "Absent", checkIn: null, checkOut: null },
-        { type: "Present", checkIn: "09:00", checkOut: "18:00" }, // Normal Day
-        { type: "Absent", checkIn: null, checkOut: null },
-        { type: "Absent", checkIn: null, checkOut: null },
-
-        // Days 16-20: Leave/Rest Day (Blue)
-        { type: "Leave", checkIn: null, checkOut: null },
-        { type: "Rest Day", checkIn: null, checkOut: null },
-        { type: "Present", checkIn: "09:00", checkOut: "17:00" }, // Normal Day
-        { type: "Leave", checkIn: null, checkOut: null },
-        { type: "Rest Day", checkIn: null, checkOut: null },
-
-        // Days 21-30: Mix of all statuses
-        { type: "Present", checkIn: "09:00", checkOut: "18:00" }, // 9.0h (Green)
-        { type: "Present", checkIn: "09:00", checkOut: "16:30" }, // 7.5h (Yellow)
-        { type: "Absent", checkIn: null, checkOut: null }, // (Red)
-        { type: "Leave", checkIn: null, checkOut: null }, // (Blue)
-        { type: "Present", checkIn: "08:30", checkOut: "17:30" }, // 9.0h (Green)
-        { type: "Rest Day", checkIn: null, checkOut: null }, // (Blue)
-        { type: "Present", checkIn: "09:00", checkOut: "17:45" }, // 8.75h (Green)
-        { type: "Present", checkIn: "09:30", checkOut: "16:30" }, // 7.0h (Yellow)
-        { type: "Absent", checkIn: null, checkOut: null }, // (Red)
-        { type: "Present", checkIn: "09:00", checkOut: "17:00" }, // 8.0h (Green)
-      ];
-
-      const generateChartData = (data) => {
-        const chartLabels = [];
-        const chartData = [];
-        const chartColors = [];
-        const targetMinutes = 8 * 60; // 480 minutes
-
-        data.slice(0, 30).forEach((day, index) => {
-          const dayNumber = (index + 1).toString().padStart(2, "0");
-          chartLabels.push(dayNumber);
-
-          if (day.type === "Present") {
-            const checkInMins = timeToMinutes(day.checkIn);
-            const checkOutMins = timeToMinutes(day.checkOut);
-
-            // Calculate duration, ensuring checkOut is >= checkIn, otherwise duration is 0
-            const durationMins = Math.max(0, checkOutMins - checkInMins);
-            const durationHours = durationMins / 60;
-
-            // Ratio of actual hours to target hours (8 hours)
-            const dataRatio = durationHours / 8.0;
-
-            // We push the ratio, which could be 0 if check-in/out were null/invalid
-            chartData.push(dataRatio);
-
-            if (durationHours >= 8.0) {
-              // Green: Target met or exceeded
-              chartColors.push("#2aa54f");
-            } else if (durationHours > 0) {
-              // Yellow: Present, but hours are short
-              chartColors.push("#ffc107");
-            } else {
-              // Red: Duration is 0 or less (Invalid times recorded, treated as absent/no time)
-              chartColors.push("#d83b13");
-              // Note: If durationHours is 0 here, dataRatio is also 0, and the minBarLength fix handles visibility.
-            }
-          } else if (day.type === "Absent") {
-            // Red: Explicitly Absent
-            chartData.push(1);
-            chartColors.push("#d83b13");
-          } else {
-            // Blue: Leave/Rest Day
-            chartData.push(1.2);
-            chartColors.push("#007bff");
-          }
-        });
-
-        return { labels: chartLabels, data: chartData, colors: chartColors };
-      };
-
-      const initAttendanceChart = () => {
-        const ctx = document.getElementById("attendanceChart").getContext("2d");
-        const { labels, data, colors } = generateChartData(mockAttendanceData);
-
-        new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Attendance Performance (Ratio to 8h Target)",
-                data: data,
-                backgroundColor: colors,
-                borderRadius: 6,
-                barPercentage: 0.9,
-                categoryPercentage: 0.8,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 1.3, // Adjusted max for the blue bar to fit
-                ticks: {
-                  stepSize: 0.25,
-                  callback: (value) => {
-                    if (value === 1.2) return "Leave/Rest Day";
-                    if (value >= 1.0) return "> 8 Hours";
-                    if (value >= 0.75) return "7-8 Hours";
-                    if (value > 0) return "< 7 Hours";
-                    if (value === 0) return "Absent";
-                    return "";
-                  },
-                },
-                title: {
-                  display: true,
-                  text: "Attendance Status / Ratio",
-                },
-              },
-              x: {
-                grid: { display: false },
-                title: {
-                  display: true,
-                  text: "Day of the Month",
-                },
-              },
-            },
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: function (context) {
-                    let label = context.dataset.label || "";
-                    if (label) {
-                      label += ": ";
-                    }
-                    const value = context.parsed.y;
-
-                    if (value === 1.2) return "Status: Leave or Rest Day";
-                    if (value === 0) return "Status: Absent";
-
-                    const hoursWorked = value * 8; // Revert ratio back to hours
-                    const status =
-                      hoursWorked >= 8 ? "Great (>8h)" : "Low (<8h)";
-                    return `Hours Worked: ${hoursWorked.toFixed(
-                      2
-                    )}h (${status})`;
-                  },
-                },
-              },
-            },
-          },
-        });
-      };
-    </script>
   </body>
 </html>

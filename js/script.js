@@ -1,3 +1,4 @@
+// js/script.js
 document.addEventListener("DOMContentLoaded", () => {
   // ===== Chart =====
   const ctx = document.getElementById("attendanceChart").getContext("2d");

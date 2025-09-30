@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leave Records - Yearly Balances</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      /* --- Styles (Consolidated) --- */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f7f9;
+        margin: 0;
+        display: flex;
+        min-height: 100vh;
+        color: #333;
+      }
+      .dashboard-container { flex-grow: 1; padding: 20px; }
+      .main-content { max-width: 1200px; margin: 0 auto; }
+      h2 { color: #007bff; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 20px; }
+      .summary-card { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
+      .summary-card h3 { color: #007bff; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+      .data-table th, .data-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+      .data-table th { background-color: #f7f9fc; font-weight: 600; color: #444; }
+
+      /* --- STICKY LEFT NAVBAR --- */
+      .sidebar-nav { width: 250px; flex-shrink: 0; background-color: #007bff; color: white; padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); }
+      .sidebar-nav .logo { padding: 0 20px 20px; font-size: 1.8rem; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 15px; }
+      .sidebar-nav .nav-links { list-style: none; padding: 0; margin: 0; }
+      .sidebar-nav .nav-links li a { display: flex; align-items: center; padding: 12px 20px; color: inherit; text-decoration: none; transition: background-color 0.2s, color 0.2s; }
+      .sidebar-nav .nav-links li a:hover, .sidebar-nav .nav-links li.active a { background-color: #0056b3; font-weight: bold; }
+      .sidebar-nav i { margin-right: 10px; width: 18px; }
+    </style>
+  </head>
+
+  <body>
+    <!-- ===== STICKY LEFT NAVBAR ===== -->
+    <nav class="sidebar-nav">
+      <div class="logo">TERE-HRM</div>
+      <ul class="nav-links">
+        <li><a href="index.html"><i class="fas fa-home"></i>Home</a></li>
+        <li><a href="attendance_record.html"><i class="fas fa-chart-line"></i>Attendance Record</a></li>
+        <li class="active">
+          <a href="leave_record.html"><i class="fas fa-calendar-alt"></i>Leave Record</a>
+        </li>
+        <li><a href="leave_applications.html"><i class="fas fa-list-check"></i>Leave Applications</a></li>
+      </ul>
+    </nav>
+
+    <!-- ===== Main Content Area ===== -->
+    <div class="dashboard-container">
+      <main class="main-content">
+        <h2>Leave Record: Yearly Balances</h2>
+
+        <section class="summary-card">
+          <h3>Current Leave Balances (2025)</h3>
+          <p>This data reflects your entitlement, usage, and remaining days for the current year.</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Leave Type</th>
+                <th>Allowed</th>
+                <th>Availed</th>
+                <th>Balance</th>
+                <th>Carry (From Prev. Year)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Annual Leave</td>
+                <td>12.000</td>
+                <td>0.00</td>
+                <td>12.00</td>
+                <td>0.000</td>
+              </tr>
+              <tr>
+                <td>Sick Leave</td>
+                <td>8.000</td>
+                <td>5.00</td>
+                <td>3.00</td>
+                <td>0.000</td>
+              </tr>
+              <tr>
+                <td>Casual Leave</td>
+                <td>8.000</td>
+                <td>2.00</td>
+                <td>6.00</td>
+                <td>0.000</td>
+              </tr>
+              <tr>
+                <td>Compensatory Leave</td>
+                <td>0.000</td>
+                <td>2.00</td>
+                <td style="color: red; font-weight: bold">-2.00</td>
+                <td>0.000</td>
+              </tr>
+              <tr>
+                <td>Unpaid Leave</td>
+                <td>15.000</td>
+                <td>0.00</td>
+                <td>15.00</td>
+                <td>0.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        
+        <section class="summary-card">
+          <h3>Past Leave Balances (2024)</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Leave Type</th>
+                <th>Allowed</th>
+                <th>Availed</th>
+                <th>Balance</th>
+                <th>Carry (To Next Year)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Annual Leave</td>
+                <td>12.000</td>
+                <td>7.00</td>
+                <td>5.00</td>
+                <td>0.000</td>
+              </tr>
+              <tr>
+                <td>Sick Leave</td>
+                <td>8.000</td>
+                <td>1.00</td>
+                <td>7.00</td>
+                <td>0.000</td>
+              </tr>
+              <tr>
+                <td>Casual Leave</td>
+                <td>8.000</td>
+                <td>8.00</td>
+                <td>0.00</td>
+                <td>0.000</td>
+              </tr>
+              <!-- ... other 2024 data ... -->
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

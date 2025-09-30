@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leave Applications</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      /* --- Styles (Consolidated) --- */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f7f9;
+        margin: 0;
+        display: flex;
+        min-height: 100vh;
+        color: #333;
+      }
+      .dashboard-container { flex-grow: 1; padding: 20px; }
+      .main-content { max-width: 1200px; margin: 0 auto; }
+      h2 { color: #007bff; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 20px; }
+      .summary-card { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
+      .summary-card h3 { color: #007bff; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+      .data-table th, .data-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+      .data-table th { background-color: #f7f9fc; font-weight: 600; color: #444; }
+      .leave-form label { display: block; margin-top: 15px; font-weight: 600; }
+      .leave-form input[type="date"], .leave-form select, .leave-form textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+      .btn-submit { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; margin-top: 20px; transition: background-color 0.2s; }
+      .btn-submit:hover { background-color: #218838; }
+      .btn-approve, .btn-reject { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+      .btn-approve { background-color: #2aa54f; color: white; }
+      .btn-reject { background-color: #d83b13; color: white; }
+      
+      /* --- TAB STYLES FIX --- */
+      .tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px; }
+      .tab-btn { background: none; border: none; padding: 10px 20px; cursor: pointer; font-size: 1rem; color: #555; border-bottom: 3px solid transparent; transition: all 0.2s; font-weight: 500; border-radius: 8px 8px 0 0; }
+      .tab-btn:hover { background-color: #f0f0f0; }
+      .tab-btn.active { color: #007bff; border-bottom: 3px solid #007bff; background-color: #f7f9fc; font-weight: 600; }
+      .tab-content { display: none; }
+      .tab-content.active { display: block; }
+      /* --- END TAB STYLES FIX --- */
+      
+      /* --- STICKY LEFT NAVBAR --- */
+      .sidebar-nav { width: 250px; flex-shrink: 0; background-color: #007bff; color: white; padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); }
+      .sidebar-nav .logo { padding: 0 20px 20px; font-size: 1.8rem; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 15px; }
+      .sidebar-nav .nav-links { list-style: none; padding: 0; margin: 0; }
+      .sidebar-nav .nav-links li a { display: flex; align-items: center; padding: 12px 20px; color: inherit; text-decoration: none; transition: background-color 0.2s, color 0.2s; }
+      .sidebar-nav .nav-links li a:hover, .sidebar-nav .nav-links li.active a { background-color: #0056b3; font-weight: bold; }
+      .sidebar-nav i { margin-right: 10px; width: 18px; }
+    </style>
+  </head>
+
+  <body>
+    <!-- ===== STICKY LEFT NAVBAR ===== -->
+    <nav class="sidebar-nav">
+      <div class="logo">TERE-HRM</div>
+      <ul class="nav-links">
+        <li><a href="index.html"><i class="fas fa-home"></i>Home</a></li>
+        <li><a href="attendance_record.html"><i class="fas fa-chart-line"></i>Attendance Record</a></li>
+        <li><a href="leave_record.html"><i class="fas fa-calendar-alt"></i>Leave Record</a></li>
+        <li class="active">
+          <a href="leave_applications.html"><i class="fas fa-list-check"></i>Leave Applications</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- ===== Main Content Area ===== -->
+    <div class="dashboard-container">
+      <main class="main-content">
+        <h2>Leave Applications (Request and Review)</h2>
+
+        <!-- Tab Container for Request/Review split -->
+        <section class="summary-card">
+            <div class="tabs leave-tabs">
+                <button class="tab-btn active" data-tab="request-leave">
+                    Request New Leave
+                </button>
+                <button class="tab-btn" data-tab="my-requests">
+                    My Applied Leaves
+                </button>
+                <button class="tab-btn" data-tab="pending-review">
+                    Pending Applications (Manager View)
+                </button>
+            </div>
+
+            <div class="tab-content-wrapper">
+                <!-- Tab 1: Request New Leave -->
+                <div class="tab-content active" id="request-leave">
+                    <h3>Request New Leave</h3>
+                    <p>
+                        Available Balance for
+                        <strong id="selected-leave-type-display" style="color: blue;">Annual Leave</strong>:
+                        <span id="current-balance" style="font-weight: bold; color: green;">12.00 days</span>
+                        <span id="balance-warning" style="color: red; margin-left: 10px; font-weight: bold;"></span>
+                    </p>
+                    <form class="leave-form" onsubmit="return validateLeaveForm(event)">
+                        <label for="leave-type">Leave Type:</label>
+                        <select id="leave-type" name="leave-type" required>
+                            <option value="">-Select-</option>
+                            <option value="4">Annual Leave</option>
+                            <option value="5">Sick Leave</option>
+                            <option value="278">Casual Leave</option>
+                            <option value="182">Unpaid Leave</option>
+                            <option value="342">Matrimonial Leave</option>
+                        </select>
+                        <label for="start-date">Start Date:</label>
+                        <input type="date" id="start-date" name="start-date" required />
+                        <label for="end-date">End Date:</label>
+                        <input type="date" id="end-date" name="end-date" required />
+                        <label for="reason">Reason:</label>
+                        <textarea id="reason" name="reason" rows="4"></textarea>
+                        <button type="submit" class="btn-submit">Submit Request</button>
+                    </form>
+                </div>
+
+                <!-- Tab 2: My Applied Leaves -->
+                <div class="tab-content" id="my-requests">
+                    <h3>My Applied Leaves History</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Leave Type</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Annual</td>
+                                <td>2025-10-10</td>
+                                <td>2025-10-14</td>
+                                <td>5.000</td>
+                                <td style="color: orange; font-weight: bold;">Pending</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Sick</td>
+                                <td>2025-09-30</td>
+                                <td>2025-09-30</td>
+                                <td>1.000</td>
+                                <td style="color: green; font-weight: bold;">Approved</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Casual</td>
+                                <td>2025-06-01</td>
+                                <td>2025-06-02</td>
+                                <td>2.000</td>
+                                <td style="color: red; font-weight: bold;">Rejected</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tab 3: Pending Review (Manager/HR View) -->
+                <div class="tab-content" id="pending-review">
+                    <h3>Pending Leave Applications (Review/Action)</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Requester</th>
+                                <th>Leave Type</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Saleem Tariq</td>
+                                <td>Annual</td>
+                                <td>5 days (10/10 - 14/10)</td>
+                                <td style="color: orange; font-weight: bold;">Pending</td>
+                                <td>
+                                    <button class="btn-approve">Approve</button>
+                                    <button class="btn-reject">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Hassan Bin Tahir</td>
+                                <td>Sick</td>
+                                <td>1 day (12/10)</td>
+                                <td style="color: orange; font-weight: bold;">Pending</td>
+                                <td>
+                                    <button class="btn-approve">Approve</button>
+                                    <button class="btn-reject">Reject</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+      </main>
+    </div>
+    
+    <script>
+      // --- Leave Form Logic (Shared Functions) ---
+      // Mock data for leave balances
+      const balanceData = {
+        4: { name: "Annual Leave", balance: 12.0, color: "green" },
+        5: { name: "Sick Leave", balance: 3.0, color: "green" },
+        278: { name: "Casual Leave", balance: 6.0, color: "green" },
+        // ... other types ...
+      };
+
+      const getLeaveDuration = (start, end) => {
+        const oneDay = 24 * 60 * 60 * 1000;
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay)) + 1;
+        return isNaN(diffDays) || startDate > endDate ? 0 : diffDays;
+      };
+
+      function updateBalanceAndValidate() {
+        // Use optional chaining for resilience in case elements don't exist on all pages
+        const leaveTypeSelect = document.getElementById("leave-type");
+        const startDateInput = document.getElementById("start-date");
+        const endDateInput = document.getElementById("end-date");
+        const selectedLeaveDisplay = document.getElementById("selected-leave-type-display");
+        const currentBalanceSpan = document.getElementById("current-balance");
+        const balanceWarningSpan = document.getElementById("balance-warning");
+        
+        if (!leaveTypeSelect || !selectedLeaveDisplay) return;
+
+        const selectedValue = leaveTypeSelect.value;
+        const data = balanceData[selectedValue];
+
+        // 1. Update Display
+        if (balanceWarningSpan) balanceWarningSpan.textContent = "";
+        currentBalanceSpan.style.color = "gray";
+
+        if (data) {
+          selectedLeaveDisplay.textContent = data.name;
+          currentBalanceSpan.textContent = `${data.balance.toFixed(2)} days`;
+          currentBalanceSpan.style.color = data.balance < 0 ? "red" : data.color;
+        } else if (selectedValue) {
+          selectedLeaveDisplay.textContent = leaveTypeSelect.options[leaveTypeSelect.selectedIndex].text;
+          currentBalanceSpan.textContent = "N/A (Check Records Tab)";
+        } else {
+          selectedLeaveDisplay.textContent = "Select a Leave Type";
+          currentBalanceSpan.textContent = "";
+        }
+
+        // 2. Perform Validation
+        const startDate = startDateInput?.value;
+        const endDate = endDateInput?.value;
+
+        if (data && startDate && endDate) {
+          const duration = getLeaveDuration(startDate, endDate);
+          const remainingBalance = data.balance;
+
+          if (duration > remainingBalance) {
+            if (balanceWarningSpan) {
+              balanceWarningSpan.textContent = `Error: Duration (${duration} days) exceeds balance!`;
+              balanceWarningSpan.style.color = "red";
+            }
+          } else if (duration > 0 && duration <= remainingBalance) {
+            if (balanceWarningSpan) {
+              balanceWarningSpan.textContent = `(${duration} days requested)`;
+              balanceWarningSpan.style.color = "blue";
+            }
+          } else if (duration > 0 && remainingBalance < 0) {
+            if (balanceWarningSpan) {
+              balanceWarningSpan.textContent = `Warning: Duration (${duration} days) will increase overdrawn balance!`;
+              balanceWarningSpan.style.color = "red";
+            }
+          }
+        }
+      }
+
+      function validateLeaveForm(event) {
+        const warningText = document.getElementById("balance-warning")?.textContent || '';
+        if (warningText.includes("Error:")) {
+          event.preventDefault();
+          console.error("Submission blocked: Leave duration exceeds available balance.");
+          return false;
+        }
+        console.log("Leave request attempted (client-side validation passed).");
+        return true;
+      }
+      
+      // --- Tab Switching Logic (FIXED) ---
+      const setupTabs = () => {
+          const tabs = document.querySelectorAll(".tab-btn");
+          tabs.forEach((tab) => {
+            tab.addEventListener("click", () => {
+              const tabContainer = tab.closest('.summary-card');
+              const targetTabId = tab.getAttribute("data-tab");
+              
+              if (!tabContainer || !targetTabId) return; // Safety check
+
+              // 1. Deactivate current active button and content within the container
+              tabContainer.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+              tabContainer.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+              
+              // 2. Activate clicked button
+              tab.classList.add("active");
+              
+              // 3. Activate target content
+              const targetContent = tabContainer.querySelector(`#${targetTabId}`);
+              if (targetContent) {
+                  targetContent.classList.add("active");
+              }
+            });
+          });
+      };
+
+      // --- Initialization ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // Only initialize form functions if the elements exist on the page
+        if (document.getElementById("leave-type")) {
+            const leaveTypeSelect = document.getElementById("leave-type");
+            const startDateInput = document.getElementById("start-date");
+            const endDateInput = document.getElementById("end-date");
+            
+            leaveTypeSelect.addEventListener("change", updateBalanceAndValidate);
+            startDateInput.addEventListener("change", updateBalanceAndValidate);
+            endDateInput.addEventListener("change", updateBalanceAndValidate);
+            updateBalanceAndValidate();
+        }
+        setupTabs();
+      });
+    </script>
+  </body>
+</html>

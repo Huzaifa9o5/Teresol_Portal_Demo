@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Record</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      /* --- Styles (Consolidated) --- */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f7f9;
+        margin: 0;
+        display: flex;
+        min-height: 100vh;
+        color: #333;
+      }
+      .dashboard-container { flex-grow: 1; padding: 20px; }
+      .main-content { max-width: 1200px; margin: 0 auto; }
+      h2 { color: #007bff; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 20px; }
+      .summary-card { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
+      .summary-card h3 { color: #007bff; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+      .data-table th, .data-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+      .data-table th { background-color: #f7f9fc; font-weight: 600; color: #444; }
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      .btn-download {
+          background-color: #007bff;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          transition: background-color 0.2s;
+      }
+      .btn-download:hover {
+          background-color: #0056b3;
+      }
+      .date-selector-group {
+          display: flex;
+          gap: 20px;
+          align-items: center;
+          margin-bottom: 15px;
+      }
+      .date-selector-group select {
+          padding: 8px 12px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+      }
+
+      /* --- STICKY LEFT NAVBAR --- */
+      .sidebar-nav { width: 250px; flex-shrink: 0; background-color: #007bff; color: white; padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); }
+      .sidebar-nav .logo { padding: 0 20px 20px; font-size: 1.8rem; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 15px; }
+      .sidebar-nav .nav-links { list-style: none; padding: 0; margin: 0; }
+      .sidebar-nav .nav-links li a { display: flex; align-items: center; padding: 12px 20px; color: inherit; text-decoration: none; transition: background-color 0.2s, color 0.2s; }
+      .sidebar-nav .nav-links li a:hover, .sidebar-nav .nav-links li.active a { background-color: #0056b3; font-weight: bold; }
+      .sidebar-nav i { margin-right: 10px; width: 18px; }
+      
+      /* ADDED FIX: Set a fixed aspect ratio for the canvas's container to help drawing */
+      #attendanceChart {
+        width: 100% !important;
+        max-width: 900px; /* Maximize visibility without stretching */
+        height: 350px !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ===== STICKY LEFT NAVBAR (Retained) ===== -->
+    <nav class="sidebar-nav">
+      <div class="logo">TERE-HRM</div>
+      <ul class="nav-links">
+        <li><a href="index.html"><i class="fas fa-home"></i>Home</a></li>
+        <li class="active">
+          <a href="attendance_record.html"><i class="fas fa-chart-line"></i>Attendance Record</a>
+        </li>
+        <li><a href="leave_record.html"><i class="fas fa-calendar-alt"></i>Leave Record</a></li>
+        <li><a href="leave_applications.html"><i class="fas fa-list-check"></i>Leave Applications</a></li>
+      </ul>
+    </nav>
+
+    <!-- ===== Main Content Area ===== -->
+    <div class="dashboard-container">
+      <main class="main-content">
+        <h2>Attendance Record & Check-In Check out Average Time</h2>
+
+        <!-- Monthly Attendance Chart -->
+        <section class="summary-card">
+          <h3>Monthly Attendance Performance</h3>
+          <div class="date-selector-group">
+            <label for="history-year">Select Year:</label>
+            <select id="history-year" onchange="initAttendanceChart()"></select>
+            <label for="history-month">Select Month:</label>
+            <select id="history-month" onchange="initAttendanceChart()"></select>
+          </div>
+          
+          <p id="avg-time-display">
+            Average Daily Present Time: <strong id="avg-time-value">Loading...</strong>
+          </p>
+          <canvas id="attendanceChart" height="300"></canvas>
+          <div
+            id="legend-info"
+            style="margin-top: 15px; font-size: 0.9em; text-align: center"
+          >
+            <span style="color: #2aa54f">8 Hours (Green)</span>
+            <span style="color: #ffc107; margin-left: 15px"
+              >■ 0 > Hours < 8 (Yellow)</span
+            >
+            <span style="color: #d83b13; margin-left: 15px"
+              >■ Absent/0 Hours (Red)</span
+            >
+            <span style="color: #007bff; margin-left: 15px"
+              >■ Leave/Rest Day (Blue)</span
+            >
+          </div>
+        </section>
+
+        <!-- Detailed Attendance History Table -->
+        <section class="summary-card">
+          <h3 id="history-table-title">Detailed Attendance History</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Hours Worked</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-history-body">
+              <!-- Content populated by JS -->
+            </tbody>
+          </table>
+        </section>
+        
+        <!-- ===== Reports and Download Section (Retained) ===== -->
+        <section class="summary-card">
+            <h3>Download Attendance Reports</h3>
+            <p>Generate and download comprehensive attendance reports for your records.</p>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <select id="report-type" class="leave-form-select" style="padding: 8px; border-radius: 6px;">
+                    <option value="monthly">Monthly Report</option>
+                    <option value="weekly">Last 4 Weeks Summary</option>
+                    <option value="yearly">Year-to-Date Summary</option>
+                </select>
+                <button class="btn-download" onclick="downloadReport()">
+                    <i class="fas fa-download"></i> Download CSV Report
+                </button>
+            </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // --- Helper Functions ---
+      const timeToMinutes = (time) => {
+        if (!time) return 0;
+        const [h, m] = time.split(":").map(Number);
+        return h * 60 + m;
+      };
+
+      // --- Mock Data (Simulating historical attendance) ---
+      const mockAttendanceHistory = {
+        '2025-9': [
+            { type: "Present", checkIn: "09:00", checkOut: "17:30" }, 
+            { type: "Present", checkIn: "08:30", checkOut: "17:30" }, 
+            { type: "Present", checkIn: "10:00", checkOut: "17:30" }, 
+            { type: "Absent", checkIn: null, checkOut: null }, 
+            { type: "Present", checkIn: "09:15", checkOut: "17:45" }, 
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Present", checkIn: "09:00", checkOut: "16:30" }, 
+            { type: "Absent", checkIn: null, checkOut: null },        
+            { type: "Present", checkIn: "09:00", checkOut: "16:00" }, 
+            { type: "Leave", checkIn: null, checkOut: null },         
+            { type: "Present", checkIn: "08:30", checkOut: "17:00" }, 
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Present", checkIn: "09:00", checkOut: "18:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "17:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "16:45" }, 
+            { type: "Absent", checkIn: null, checkOut: null },        
+            { type: "Present", checkIn: "09:00", checkOut: "17:15" }, 
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Present", checkIn: "08:45", checkOut: "18:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "16:00" }, 
+            { type: "Leave", checkIn: null, checkOut: null },         
+            { type: "Present", checkIn: "09:30", checkOut: "17:30" }, 
+            { type: "Absent", checkIn: null, checkOut: null },        
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Present", checkIn: "09:00", checkOut: "17:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "16:45" }, 
+        ],
+        '2025-8': [
+            { type: "Present", checkIn: "08:30", checkOut: "17:30" }, 
+            { type: "Present", checkIn: "08:45", checkOut: "17:45" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "18:00" }, 
+            { type: "Present", checkIn: "08:30", checkOut: "17:30" }, 
+            { type: "Present", checkIn: "09:15", checkOut: "16:00" }, 
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Present", checkIn: "09:00", checkOut: "17:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "17:30" }, 
+            { type: "Leave", checkIn: null, checkOut: null }, 
+            { type: "Present", checkIn: "08:30", checkOut: "17:00" }, 
+            { type: "Absent", checkIn: null, checkOut: null }, 
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Rest Day", checkIn: null, checkOut: null },      
+            { type: "Present", checkIn: "09:00", checkOut: "18:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "17:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "16:45" }, 
+            ...Array(14).fill({ type: "Present", checkIn: "09:00", checkOut: "17:30" }),
+        ],
+        '2024-1': [
+            { type: "Present", checkIn: "08:30", checkOut: "16:00" }, 
+            { type: "Present", checkIn: "09:00", checkOut: "17:00" }, 
+            { type: "Absent", checkIn: null, checkOut: null }, 
+            { type: "Present", checkIn: "08:30", checkOut: "16:30" }, 
+            { type: "Rest Day", checkIn: null, checkOut: null }, 
+            { type: "Rest Day", checkIn: null, checkOut: null }, 
+            { type: "Leave", checkIn: null, checkOut: null }, 
+            { type: "Present", checkIn: "09:00", checkOut: "17:30" }, 
+            ...Array(23).fill({ type: "Present", checkIn: "09:00", checkOut: "17:00" }),
+        ]
+      };
+      
+      let processedAttendanceData = []; 
+      let currentChartInstance = null; 
+
+      // --- Chart Data Processor and Table Renderer ---
+      const generateChartData = (year, monthIndex) => {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const month = monthIndex + 1;
+        const monthKey = `${year}-${month}`;
+        const data = mockAttendanceHistory[monthKey] || [];
+        
+        const daysInMonth = new Date(year, month, 0).getDate();
+
+        const chartLabels = [];
+        const chartData = [];
+        const chartColors = [];
+        const tableRows = [];
+        let totalHours = 0;
+        let presentDaysCount = 0;
+        const targetHours = 8.0;
+        
+        processedAttendanceData = [];
+
+        for (let index = 0; index < daysInMonth; index++) {
+          const day = data[index] || { type: "N/A" }; 
+          const dayNumber = (index + 1).toString().padStart(2, "0");
+          chartLabels.push(dayNumber);
+          const dateString = `${year}-${month.toString().padStart(2, '0')}-${dayNumber}`;
+
+          let durationHours = 0;
+          let statusText = '';
+          let statusColor = '';
+          let checkInDisplay = day.checkIn || '--';
+          let checkOutDisplay = day.checkOut || '--';
+          let actualDuration = 0;
+          let dataRatio = 0;
+
+          if (day.type === "Present") {
+            const durationMins = Math.max(0, timeToMinutes(day.checkOut) - timeToMinutes(day.checkIn));
+            durationHours = durationMins / 60;
+            actualDuration = durationHours;
+            dataRatio = durationHours / targetHours;
+            chartData.push(dataRatio);
+
+            if (durationHours >= targetHours) {
+              statusText = 'Present (Met)';
+              statusColor = '#2aa54f';
+            } else if (durationHours > 0) {
+              statusText = 'Present (Short)';
+              statusColor = '#ffc107';
+            } else {
+              statusText = 'Absent (Punch Missing)';
+              statusColor = '#d83b13';
+            }
+            if (durationHours > 0) {
+              totalHours += durationHours;
+              presentDaysCount++;
+            }
+            chartColors.push(statusColor);
+
+          } else if (day.type === "Absent") {
+            statusText = 'Absent';
+            statusColor = '#d83b13';
+            chartData.push(0); 
+            chartColors.push(statusColor);
+            actualDuration = 0;
+          } else if (day.type === "Leave" || day.type === "Rest Day") {
+            statusText = day.type === 'Leave' ? 'Leave' : 'Rest Day';
+            statusColor = '#007bff';
+            chartData.push(1.2); 
+            chartColors.push(statusColor);
+            actualDuration = 0;
+          } else { 
+            statusText = 'N/A';
+            statusColor = 'gray';
+            chartData.push(0);
+            chartColors.push(statusColor);
+            actualDuration = 0;
+          }
+          
+          processedAttendanceData.push({
+              checkIn: checkInDisplay,
+              checkOut: checkOutDisplay,
+              duration: actualDuration.toFixed(2),
+              status: statusText
+          });
+
+          tableRows.push(`
+            <tr>
+              <td>${dateString}</td>
+              <td>${checkInDisplay}</td>
+              <td>${checkOutDisplay}</td>
+              <td>${actualDuration.toFixed(1)}h</td>
+              <td style="color: ${statusColor}; font-weight: bold;">${statusText}</td>
+            </tr>
+          `);
+        }
+
+        const averageDailyTime = presentDaysCount > 0 ? totalHours / presentDaysCount : 0;
+        
+        document.getElementById('history-table-title').textContent = `Detailed Attendance History (${monthNames[monthIndex]} ${year})`;
+
+        return { labels: chartLabels, data: chartData, colors: chartColors, averageDailyTime, tableRows };
+      };
+
+      // --- Chart Initializer ---
+      const initAttendanceChart = () => {
+        const canvas = document.getElementById("attendanceChart");
+        const ctx = canvas.getContext("2d");
+        const tbody = document.getElementById("attendance-history-body");
+        const year = document.getElementById("history-year").value;
+        const monthIndex = parseInt(document.getElementById("history-month").value);
+
+        if (!ctx || !tbody || !year || isNaN(monthIndex)) return;
+
+        const { labels, data, colors, averageDailyTime, tableRows } = generateChartData(year, monthIndex);
+        
+        // Update Table
+        tbody.innerHTML = tableRows.join('');
+
+        // Update Average Time Display
+        const avgDisplayValue = document.getElementById('avg-time-value');
+        if (avgDisplayValue) {
+          const color = averageDailyTime >= 8 ? '#2aa54f' : '#ffc107';
+          avgDisplayValue.textContent = `${averageDailyTime.toFixed(2)} hours`;
+          avgDisplayValue.style.color = color;
+        }
+
+        // FIX: Ensure the canvas rendering size matches its CSS size to prevent blur/stretch
+        const chartContainer = canvas.closest('.summary-card');
+        const containerWidth = chartContainer.offsetWidth - 40; // Subtract padding
+        const containerHeight = 350; // Set explicit height from CSS
+
+        canvas.width = containerWidth;
+        canvas.height = containerHeight;
+        
+        if (window.attendanceChartInstance) {
+            window.attendanceChartInstance.destroy();
+        }
+
+        window.attendanceChartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Attendance Performance (Ratio to 8h Target)",
+                data: data,
+                backgroundColor: colors,
+                borderRadius: 6,
+                barPercentage: 0.9,
+                categoryPercentage: 0.8,
+                minBarLength: 5, 
+              },
+            ],
+          },
+          options: {
+            animation: false, 
+            responsive: false, // Prevents scroll scaling bug
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 1.3,
+                ticks: {
+                  stepSize: 0.25,
+                  callback: (value) => {
+                    if (value === 1.2) return "Leave/RD";
+                    if (value === 1.0) return "8h Target";
+                    if (value === 0.5) return "4h (Half)";
+                    if (value === 0) return "Absent";
+                    return "";
+                  },
+                },
+                title: { display: true, text: "Attendance Status / Ratio" },
+              },
+              x: {
+                grid: { display: false },
+                title: { display: true, text: "Day of the Month" },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  title: function(context) {
+                      const dayIndex = context[0].dataIndex;
+                      const dayNumber = labels[dayIndex];
+                      return `Date: ${year}-${(monthIndex + 1).toString().padStart(2, '0')}-${dayNumber}`;
+                  },
+                  label: function (context) {
+                    const dayIndex = context.dataIndex;
+                    const dayData = processedAttendanceData[dayIndex];
+                    const tooltipLines = [
+                        `Status: ${dayData.status}`,
+                    ];
+
+                    if (dayData.checkIn !== '--') {
+                        tooltipLines.push(`Check In: ${dayData.checkIn}`);
+                        tooltipLines.push(`Check Out: ${dayData.checkOut}`);
+                        tooltipLines.push(`Duration: ${dayData.duration}h`);
+                        
+                        if (dayData.status.includes('Present')) {
+                            const hours = parseFloat(dayData.duration);
+                            const avgTimeText = hours >= 8 ? "Target Met" : "Time Short";
+                            tooltipLines.push(avgTimeText);
+                        }
+                    }
+                    
+                    return tooltipLines;
+                  },
+                },
+              },
+            },
+          },
+        });
+      };
+      
+      // --- Report Download Logic ---
+      function downloadReport() {
+          const year = document.getElementById("history-year").value;
+          const monthIndex = parseInt(document.getElementById("history-month").value);
+          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          const monthName = monthNames[monthIndex];
+
+          const headers = ["Date", "Check In", "Check Out", "Hours Worked", "Status"];
+          
+          let csvContent = headers.join(",") + "\n";
+          
+          processedAttendanceData.forEach((dayData, index) => {
+              const dayNumber = (index + 1).toString().padStart(2, "0");
+              const dateString = `${year}-${(monthIndex + 1).toString().padStart(2, '0')}-${dayNumber}`;
+              
+              const row = [
+                  dateString,
+                  dayData.checkIn,
+                  dayData.checkOut,
+                  dayData.duration,
+                  dayData.status
+              ].map(e => `"${e}"`).join(",");
+              
+              csvContent += row + "\n";
+          });
+
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement("a");
+          const url = URL.createObjectURL(blob);
+          
+          link.setAttribute("href", url);
+          link.setAttribute("download", `Attendance_Report_${monthName}_${year}.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          console.log(`Downloading report for ${monthName} ${year}...`);
+      }
+      
+      // --- Date Dropdown Setup ---
+      const setupDateSelectors = () => {
+          const yearSelect = document.getElementById('history-year');
+          const monthSelect = document.getElementById('history-month');
+          const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+          
+          const today = new Date();
+          const currentYear = today.getFullYear();
+          const currentMonth = today.getMonth();
+          
+          const joinYear = 2023; 
+          
+          // Populate Years
+          for (let y = currentYear; y >= joinYear; y--) {
+              const option = document.createElement('option');
+              option.value = y;
+              option.textContent = y;
+              yearSelect.appendChild(option);
+          }
+          
+          // Populate Months
+          monthNames.forEach((name, index) => {
+              const option = document.createElement('option');
+              option.value = index;
+              option.textContent = name;
+              monthSelect.appendChild(option);
+          });
+          
+          // Set defaults to current month/year 
+          yearSelect.value = 2025; // Set explicitly based on mock data context
+          monthSelect.value = 8; // September (Index 8)
+      };
+
+      // --- Initialization ---
+      document.addEventListener("DOMContentLoaded", () => {
+        setupDateSelectors();
+        // Initialize the Attendance Chart 
+        if (document.getElementById("attendanceChart")) {
+            // Wait for DOM layout to stabilize before reading container width
+            setTimeout(initAttendanceChart, 0); 
+        }
+      });
+    </script>
+  </body>
+</html>
