@@ -11,87 +11,132 @@
     <style>
       /* --- Global & Layout Reset --- */
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f4f7f9;
+        font-family: "Inter", sans-serif;
+        background-color: #eef2f7;
         margin: 0;
         display: flex;
         min-height: 100vh;
+        color: #333;
       }
-      .dashboard-container { flex-grow: 1; padding: 20px; }
-      .main-content { max-width: 1200px; margin: 0 auto; }
-      h2 { color: #007bff; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 20px; }
-      .summary-card {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      .dashboard-container {
+        flex-grow: 1;
+        padding: 30px;
+      }
+      .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h2 {
+        color: #007bff;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 10px;
         margin-bottom: 20px;
       }
-      .summary-card h3 { 
-        color: #007bff; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; 
+
+      /* --- Card Styles --- */
+      .summary-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 20px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
       }
-      .data-table { width: 100%; border-collapse: collapse; }
-      .data-table td { padding: 8px 0; border-bottom: 1px solid #eee; }
-      
-      /* --- NEW PROFILE HEADER STYLES --- */
+      .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      }
+      .summary-card h3 {
+        color: #007bff;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .data-table td {
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f1f1;
+      }
+      .data-table tr:hover td {
+        background: #f9fbff;
+        transition: background 0.2s;
+      }
+
+      /* --- Profile Header --- */
       .profile-header-card {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 25px;
+        align-items: center; /* ✅ keeps vertical centering */
+        background: linear-gradient(135deg, #ffffff, #f8fbff);
+        padding: 25px 40px; /* ✅ added padding so avatar isn’t stuck to edge */
+        border-radius: 16px;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
       }
-      .profile-info {
-        flex-grow: 1;
+
+      .profile-header-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
       }
       .profile-info h1 {
         font-size: 2.2rem;
         color: #007bff;
-        margin: 0 0 5px;
+        margin: 0 0 8px;
       }
       .profile-info p {
         font-size: 1.1rem;
-        color: #555;
-        margin: 0 0 5px;
+        color: #444;
+        margin: 4px 0;
       }
       .profile-avatar {
-        width: 100px;
-        height: 100px;
+        display: flex; /* ✅ make container flexible */
+        justify-content: center; /* ✅ horizontal centering */
+        align-items: center; /* ✅ vertical centering */
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
-        background-color: #e0e0e0; /* Placeholder color */
-        background-image: url('https://placehold.co/100x100/CCCCCC/888888?text=AVATAR'); /* Placeholder image */
+        background-image: url("/assets/images/profile.jpeg");
         background-size: cover;
-        flex-shrink: 0;
-        border: 4px solid #007bff;
+        background-position: center; /* ✅ ensures face is centered */
+        border: 3px solid #007bff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+        margin-left: 20px; /* ✅ gives breathing space from text */
       }
+      .profile-avatar:hover {
+        transform: scale(1.08);
+      }
+
+      /* --- Employee Info Grid --- */
       .employee-info-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 25px;
       }
-      
-      /* --- STICKY LEFT NAVBAR --- */
+
+      /* --- Sidebar Nav --- */
       .sidebar-nav {
         width: 250px;
         flex-shrink: 0;
-        background-color: #007bff;
+        background: linear-gradient(180deg, #007bff, #0056b3);
         color: white;
         padding: 20px 0;
         position: sticky;
         top: 0;
         height: 100vh;
         overflow-y: auto;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
       }
       .sidebar-nav .logo {
         padding: 0 20px 20px;
         font-size: 1.8rem;
         font-weight: bold;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        margin-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        margin-bottom: 20px;
       }
       .sidebar-nav .nav-links {
         list-style: none;
@@ -101,18 +146,23 @@
       .sidebar-nav .nav-links li a {
         display: flex;
         align-items: center;
-        padding: 12px 20px;
+        padding: 14px 22px;
         color: inherit;
         text-decoration: none;
-        transition: background-color 0.2s, color 0.2s;
+        transition: background-color 0.25s, padding-left 0.25s;
       }
-      .sidebar-nav .nav-links li a:hover, .sidebar-nav .nav-links li.active a {
-        background-color: #0056b3;
+      .sidebar-nav .nav-links li a:hover {
+        background: rgba(255, 255, 255, 0.15);
+        padding-left: 28px;
+      }
+      .sidebar-nav .nav-links li.active a {
+        background: rgba(255, 255, 255, 0.25);
         font-weight: bold;
       }
       .sidebar-nav i {
-        margin-right: 10px;
-        width: 18px;
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
       }
     </style>
   </head>
@@ -122,16 +172,22 @@
       <div class="logo">TERE-HRM</div>
       <ul class="nav-links">
         <li class="active">
-          <a href="index.html"><i class="fas fa-home"></i>Home</a>
+          <a href="/index.html"><i class="fas fa-home"></i>Home</a>
         </li>
         <li>
-          <a href="./pages/attendance_record.html"><i class="fas fa-chart-line"></i>Attendance Record</a>
+          <a href="./pages/attendance_record.html"
+            ><i class="fas fa-chart-line"></i>Attendance Record</a
+          >
         </li>
         <li>
-          <a href="./pages/leave_record.html"><i class="fas fa-calendar-alt"></i>Leave Record</a>
+          <a href="./pages/leave_record.html"
+            ><i class="fas fa-calendar-alt"></i>Leave Record</a
+          >
         </li>
         <li>
-          <a href="./pages/leave_applications.html"><i class="fas fa-list-check"></i>Leave Applications</a>
+          <a href="./pages/leave_applications.html"
+            ><i class="fas fa-list-check"></i>Leave Applications</a
+          >
         </li>
       </ul>
     </nav>
@@ -141,19 +197,19 @@
         <h2>Employee Summary</h2>
 
         <section class="profile-header-card">
-            <div class="profile-info">
-                <h1>Anna Caxilijan</h1>
-                <p><strong>Designation:</strong> Architecture Engineer</p>
-                <p><strong>Department:</strong> Design & Engineering</p>
-            </div>
-            <div class="profile-avatar" aria-label="Employee Avatar"></div>
+          <div class="profile-info">
+            <h1>Anna Caxilijan</h1>
+            <p><strong>Designation:</strong> Architecture Engineer</p>
+            <p><strong>Department:</strong> Design & Engineering</p>
+          </div>
+          <div class="profile-avatar" aria-label="Employee Avatar"></div>
         </section>
 
-
-        <h2 style="font-size: 1.5rem; border-bottom: none; padding-bottom: 0;">Detailed Information</h2>
+        <h2 style="font-size: 1.5rem; border-bottom: none; padding-bottom: 0">
+          Detailed Information
+        </h2>
 
         <div class="employee-info-grid">
-          
           <section class="summary-card">
             <h3>Personal Details</h3>
             <table class="data-table">
@@ -212,7 +268,7 @@
                 </tr>
                 <tr>
                   <td><strong>Status</strong></td>
-                  <td style="color: green; font-weight: bold;">Active</td>
+                  <td style="color: green; font-weight: bold">Active</td>
                 </tr>
               </tbody>
             </table>
