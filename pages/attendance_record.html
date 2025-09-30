@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Attendance Record</title>
+    <!-- Load Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link
       rel="stylesheet"
@@ -61,17 +62,17 @@
       .sidebar-nav .nav-links li a:hover, .sidebar-nav .nav-links li.active a { background-color: #0056b3; font-weight: bold; }
       .sidebar-nav i { margin-right: 10px; width: 18px; }
       
-      /* ADDED FIX: Set a fixed aspect ratio for the canvas's container to help drawing */
+      /* CHART FIXES: Use max-width for container and let canvas use fixed dimensions */
       #attendanceChart {
-        width: 100% !important;
-        max-width: 900px; /* Maximize visibility without stretching */
-        height: 350px !important;
+        /* CSS dimensions are set to stretch the *container*, but Chart.js uses the attributes */
+        max-width: 100%;
+        display: block;
       }
     </style>
   </head>
 
   <body>
-    <!-- ===== STICKY LEFT NAVBAR (Retained) ===== -->
+    <!-- ===== STICKY LEFT NAVBAR ===== -->
     <nav class="sidebar-nav">
       <div class="logo">TERE-HRM</div>
       <ul class="nav-links">
@@ -102,14 +103,15 @@
           <p id="avg-time-display">
             Average Daily Present Time: <strong id="avg-time-value">Loading...</strong>
           </p>
-          <canvas id="attendanceChart" height="300"></canvas>
+          <!-- FIXED: Set hard pixel dimensions on the canvas element -->
+          <canvas id="attendanceChart" width="800" height="350"></canvas>
           <div
             id="legend-info"
             style="margin-top: 15px; font-size: 0.9em; text-align: center"
           >
-            <span style="color: #2aa54f">8 Hours (Green)</span>
+            <span style="color: #2aa54f">■ $\ge 8$ Hours (Green)</span>
             <span style="color: #ffc107; margin-left: 15px"
-              >■ 0 > Hours < 8 (Yellow)</span
+              >■ $0 <$ Hours $< 8$ (Yellow)</span
             >
             <span style="color: #d83b13; margin-left: 15px"
               >■ Absent/0 Hours (Red)</span
@@ -139,7 +141,7 @@
           </table>
         </section>
         
-        <!-- ===== Reports and Download Section (Retained) ===== -->
+        <!-- ===== Reports and Download Section ===== -->
         <section class="summary-card">
             <h3>Download Attendance Reports</h3>
             <p>Generate and download comprehensive attendance reports for your records.</p>
@@ -359,13 +361,9 @@
           avgDisplayValue.style.color = color;
         }
 
-        // FIX: Ensure the canvas rendering size matches its CSS size to prevent blur/stretch
-        const chartContainer = canvas.closest('.summary-card');
-        const containerWidth = chartContainer.offsetWidth - 40; // Subtract padding
-        const containerHeight = 350; // Set explicit height from CSS
-
-        canvas.width = containerWidth;
-        canvas.height = containerHeight;
+        // --- CHART STABILITY FIXES ---
+        // We rely entirely on the HTML width/height attributes for fixed size rendering.
+        // No manual JS resizing is performed here to maintain stability.
         
         if (window.attendanceChartInstance) {
             window.attendanceChartInstance.destroy();
@@ -447,6 +445,8 @@
             },
           },
         });
+        
+        window.attendanceChartInstance.update('none');
       };
       
       // --- Report Download Logic ---
@@ -497,7 +497,6 @@
           
           const today = new Date();
           const currentYear = today.getFullYear();
-          const currentMonth = today.getMonth();
           
           const joinYear = 2023; 
           
@@ -518,7 +517,7 @@
           });
           
           // Set defaults to current month/year 
-          yearSelect.value = 2025; // Set explicitly based on mock data context
+          yearSelect.value = 2025; 
           monthSelect.value = 8; // September (Index 8)
       };
 
@@ -527,8 +526,8 @@
         setupDateSelectors();
         // Initialize the Attendance Chart 
         if (document.getElementById("attendanceChart")) {
-            // Wait for DOM layout to stabilize before reading container width
-            setTimeout(initAttendanceChart, 0); 
+            // Wait for DOM to load fully before initializing chart
+            setTimeout(initAttendanceChart, 100); 
         }
       });
     </script>
