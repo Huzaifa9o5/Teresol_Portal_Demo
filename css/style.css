@@ -12,7 +12,7 @@ body {
 
 /* ===== Top Navigation ===== */
 .topnav {
-  background: #3d5a80;
+  background: #25237b;
   color: #fff;
   display: flex;
   align-items: center;
@@ -66,7 +66,7 @@ body {
   overflow-y: auto;
 }
 .ess-header {
-  background: #293241;
+  background: #25237b;
   color: #fff;
   text-align: center;
   padding: 10px;

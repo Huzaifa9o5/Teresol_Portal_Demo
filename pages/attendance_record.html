@@ -55,7 +55,9 @@
       }
 
       /* --- STICKY LEFT NAVBAR --- */
-      .sidebar-nav { width: 250px; flex-shrink: 0; background-color: #007bff; color: white; padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); }
+      .sidebar-nav { width: 250px; flex-shrink: 0;
+                background: linear-gradient(180deg, #25237b, #8b0303);
+ color: white; padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); }
       .sidebar-nav .logo { padding: 0 20px 20px; font-size: 1.8rem; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 15px; }
       .sidebar-nav .nav-links { list-style: none; padding: 0; margin: 0; }
       .sidebar-nav .nav-links li a { display: flex; align-items: center; padding: 12px 20px; color: inherit; text-decoration: none; transition: background-color 0.2s, color 0.2s; }
@@ -109,9 +111,9 @@
             id="legend-info"
             style="margin-top: 15px; font-size: 0.9em; text-align: center"
           >
-            <span style="color: #2aa54f">■ $\ge 8$ Hours (Green)</span>
+            <span style="color: #2aa54f"> 8 Hours (Green)</span>
             <span style="color: #ffc107; margin-left: 15px"
-              >■ $0 <$ Hours $< 8$ (Yellow)</span
+              >■ 0 > Hours < 8 (Yellow)</span
             >
             <span style="color: #d83b13; margin-left: 15px"
               >■ Absent/0 Hours (Red)</span
@@ -278,7 +280,7 @@
             chartData.push(dataRatio);
 
             if (durationHours >= targetHours) {
-              statusText = 'Present (Met)';
+              statusText = 'Present';
               statusColor = '#2aa54f';
             } else if (durationHours > 0) {
               statusText = 'Present (Short)';
